@@ -1,11 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>テストページ</title>
+  <link rel="stylesheet" href="style.css"> <!-- 外部CSSのテスト -->
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f8ff;
+      padding: 30px;
+    }
+    .box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    img {
+      max-width: 100%;
+    }
+    a {
+      color: #00f;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    
+  <div class="box">
+    <h1>テストページ</h1>
+
+    <h2>1. テキスト表示テスト</h2>
+    <p>これは段落です。日本語表示、フォント確認、改行など。</p>
+
+    <h2>2. ボタンとJavaScriptテスト</h2>
+    <button onclick="alert('ボタンがクリックされました！')">クリックテスト</button>
+
+    <h2>3. 入力フォーム</h2>
+    <form onsubmit="event.preventDefault(); alert('送信されました');">
+      <input type="text" placeholder="テキスト入力">
+      <textarea placeholder="複数行入力"></textarea>
+      <button type="submit">送信</button>
+    </form>
+
+    <h2>4. 画像読み込みテスト</h2>
+    <img src="https://via.placeholder.com/300x150?text=Sample+Image" alt="サンプル画像">
+
+    <h2>5. 外部リンクテスト</h2>
+    <a href="https://example.com" target="_blank">Example.com を開く</a>
+
+    <h2>6. JavaScript動作テスト</h2>
+    <p id="time"></p>
+    <script>
+      document.getElementById("time").textContent = "現在時刻: " + new Date().toLocaleString();
+    </script>
+
+    <h2>7. 外部CSS確認</h2>
+    <p class="external-style">← style.css によるスタイルを当ててください</p>
+  </div>
 </body>
 </html>
