@@ -2,70 +2,194 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>テストページ</title>
-  <link rel="stylesheet" href="style.css"> <!-- 外部CSSのテスト -->
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f0f8ff;
-      padding: 30px;
-    }
-    .box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 800px;
-      margin: auto;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-    }
-    input, textarea {
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    img {
-      max-width: 100%;
-    }
-    a {
-      color: #00f;
-      text-decoration: underline;
-    }
-  </style>
+  <title>Dropbox アップローダー</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js"></script>
 </head>
 <body>
-  <div class="box">
-    <h1>テストページ</h1>
+  <h2>如月ファイル管理</h2>
+  <input type="file" id="fileInput">
+  <button id="uploadBtn">アップロード</button>
+  <p id="status"></p>
+  <p id="usage"></p>
+  <button id="refreshBtn">ファイル一覧を表示</button>
+  <ul id="fileList"></ul>
 
-    <h2>1. テキスト表示テスト</h2>
-    <p>これは段落です。日本語表示、フォント確認、改行など。</p>
+  <script>
+    const ACCESS_TOKEN = 'sl.u.AF1yuVpmwA_rK0M6L5wztzkSJZtaql01IZmHXJXS_sSjyeia2uiXFL-6N_e2QiQ_TlnrsoaHKdxjTTeCt8OpkvI_JbcjBlAITkvgrzPctRZLZIp5lJu-tIUkT8VC0oInuz375B_CPdxsu5wAJHe5k3ejrY9A9qwltd9LmvOpSttP7stOg41B2rIn1StRjpDOrogXpYFweLcKU4fLrM3-8xVcdE3mNRzOMpvLnnxIQ_5T-_MrOMSyR6cMcZ6bGTatFJEwZR6UuaiKLl4_Yx6VSASv06T13xEp9Hrze51w1sdqUVPSIE6rps2Jd08nacSHOssE5IscrfG4EaGyuvQiKqJ0t_BuQLWwYbsKU1LKnHa_OKE97xTgatcbSXMXD9Eme5_4yXAsim-MW-3QrcdnuKNrdxVOTCao3hUKzKL8MUJQtnZueKrntR3lWlTA3dqK7eJyQC07sMD-S5HVlKJkvtMrqh29xc1dmEYsqdEycADrdKlDA057k3c0Mwd2u-AmMiibx0_7jqhKpK18_n6LyCGIb2z6RJ3EdG-qZJJxX3z4w9YvTEOYKF7JszEDHm69h6QdWBfk97DsTuL-nPh1wBFn49onbXDVPruOhaz3vY1kw-exwdWJ9M5JufKZgtHHDj2QgP8W4iT0qSRAEC7hc7POzD6yghJgOzS6towjMR0E3ZeShsWQxRxEsC4lqTxnWMNf7z8qw8XrVg4PJwg63EAqLugdM7mBMgzzszgjsDWrmL6nVypEfHnT5vEWTJWFxQBYrv6QhBSpIkr6YEtoW6rmCPz3G69lRoMi3iiJDg8VyXwlt5RJaIef3Ap8KYHArWZhlR9GhKVvTiiSRE8e4G-srKnnTohq3K1REYtB7_lVDCxjJOcOalMLklyeSYFwRvuDdZiy9Lz4lRLcfQKRxbWMvb__qSDJUBGRAlh2qm4BuFqEqXnv6dgKQ0g_T76B8x2Ey2xQ_w5XlUDXohH7S2H9ynV3QSm9gi6OeHFZS_S3pUyMHzxEwuWeRDZReb6w8CGEA5LWHv2c1Vk3hICyTLAefExmumqoupGnF-ERRsvUp5H5NkLw2UBsVVu03vxGGPupe7No-X6j6kSeZg0ATjhKLNhonQ7On6_lP3ziKBLs_pMIVEjiW8SXP8kKyrSiB3ofTazh62opyKTPvKkNVr4VUiilTCnqnBOewLaf5OsQRWUDEGqFOozaVtNbxHkyTag2vsrlyY-6wNpBsXAGkzDZ13YkrIMtZ86nHvqgmrLu8c36EejU1wRODBGMTySPFSATP9jch7sGM9SM0RT-HP54VRB_YKpGs4xK2-x37mT5eCSEg1gs_7m1zhkFyYCrMyRQr2oPRWV57ShNDWKvERE4u8Xofu76aoO5TsYURq5owx4el5hWJCelpDs5vY0fLiuUg_tPVhUN0QFobuSZZDx5nk9phIp-ufsXWmTGwIsaNw'; // ← 自分のアクセストークンに差し替える
+    const MAX_TOTAL_BYTES = 500 * 1024 * 1024; // 500MB制限
 
-    <h2>2. ボタンとJavaScriptテスト</h2>
-    <button onclick="alert('ボタンがクリックされました！')">クリックテスト</button>
+    const dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
 
-    <h2>3. 入力フォーム</h2>
-    <form onsubmit="event.preventDefault(); alert('送信されました');">
-      <input type="text" placeholder="テキスト入力">
-      <textarea placeholder="複数行入力"></textarea>
-      <button type="submit">送信</button>
-    </form>
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const fileList = document.getElementById('fileList');
+    const status = document.getElementById('status');
+    const usage = document.getElementById('usage');
 
-    <h2>4. 画像読み込みテスト</h2>
-    <img src="https://via.placeholder.com/300x150?text=Sample+Image" alt="サンプル画像">
+    function formatSize(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
 
-    <h2>5. 外部リンクテスト</h2>
-    <a href="https://example.com" target="_blank">Example.com を開く</a>
+    function updateStorageUsage() {
+  dbx.usersGetSpaceUsage()
+    .then(response => {
+      const used = response.result.used;
+      const maxLimit = MAX_TOTAL_BYTES; // ← 512MB（= 500×1024×1024）
+      const percent = ((used / maxLimit) * 100).toFixed(1);
+      usage.textContent = `📦 使用済み: ${formatSize(used)} / ${formatSize(maxLimit)}（${percent}%）`;
+      window.__used_storage = used;
+    })
+    .catch(err => {
+      console.error('使用量取得エラー:', err);
+      usage.textContent = '⚠️ 使用量取得に失敗しました';
+      window.__used_storage = 0;
+    });
+}
 
-    <h2>6. JavaScript動作テスト</h2>
-    <p id="time"></p>
-    <script>
-      document.getElementById("time").textContent = "現在時刻: " + new Date().toLocaleString();
-    </script>
+    function refreshFileList() {
+      fileList.innerHTML = '<li>読み込み中...</li>';
+      dbx.filesListFolder({ path: '' })
+        .then(response => {
+          const entries = response.result.entries;
+          fileList.innerHTML = '';
+          if (entries.length === 0) {
+            fileList.innerHTML = '<li>ファイルがありません</li>';
+            return;
+          }
+          entries.forEach(entry => {
+            if (entry['.tag'] === 'file') {
+              const li = document.createElement('li');
+              li.textContent = `${entry.name} (${formatSize(entry.size)}) `;
 
-    <h2>7. 外部CSS確認</h2>
-    <p class="external-style">← style.css によるスタイルを当ててください</p>
-  </div>
+              const dlBtn = document.createElement('button');
+              dlBtn.textContent = 'ダウンロード';
+              dlBtn.addEventListener('click', () => downloadFile(entry.path_lower));
+              li.appendChild(dlBtn);
+
+              const delBtn = document.createElement('button');
+              delBtn.textContent = '削除';
+              delBtn.addEventListener('click', () => deleteFile(entry.path_lower));
+              li.appendChild(delBtn);
+
+              const infoBtn = document.createElement('button');
+              infoBtn.textContent = '🔍 詳細';
+              infoBtn.addEventListener('click', () => showFileDetails(entry));
+              li.appendChild(infoBtn);
+
+              fileList.appendChild(li);
+            }
+          });
+        })
+        .catch(err => {
+          console.error('一覧取得エラー:', err);
+          fileList.innerHTML = '<li>❌ ファイル一覧取得に失敗しました</li>';
+        });
+    }
+
+    function downloadFile(path) {
+      status.textContent = 'ダウンロード中...';
+      dbx.filesDownload({ path })
+        .then(response => {
+          const blob = response.result.fileBlob || response.result.fileBinary;
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = response.result.name;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          status.textContent = '✅ ダウンロード成功';
+        })
+        .catch(err => {
+          console.error('ダウンロードエラー:', err);
+          status.textContent = '❌ ダウンロード失敗';
+        });
+    }
+
+    function showFileDetails(file) {
+  const name = file.name;
+  const size = formatSize(file.size);
+  const path = file.path_display;
+  const id = file.id;
+  const updated = new Date(file.server_modified).toLocaleString();
+
+  const message = `
+📄 ファイル詳細
+━━━━━━━━━━━━━━━
+📝 名前：${name}
+📦 サイズ：${size}
+📁 パス：${path}
+🕒 更新日時：${updated}
+🆔 ID：${id}
+`.trim();
+
+  alert(message);
+}
+
+    function deleteFile(path) {
+      if (!confirm('本当に削除しますか？')) return;
+      dbx.filesDeleteV2({ path })
+        .then(() => {
+          status.textContent = '🗑️ 削除完了';
+          refreshFileList();
+          updateStorageUsage();
+        })
+        .catch(err => {
+          console.error('削除エラー:', err);
+          status.textContent = '❌ 削除失敗';
+        });
+    }
+
+    uploadBtn.addEventListener('click', () => {
+      const files = fileInput.files;
+      if (files.length === 0) {
+        alert('ファイルを選択してください');
+        return;
+      }
+      const file = files[0];
+
+      if ((window.__used_storage || 0) + file.size > MAX_TOTAL_BYTES) {
+        status.textContent = '❌ アップロード不可：合計サイズが500MBを超えます';
+        return;
+      }
+
+      status.textContent = 'アップロード中...';
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const contents = e.target.result;
+        dbx.filesUpload({
+          path: '/' + file.name,
+          contents: contents,
+          mode: 'overwrite'
+        })
+        .then(() => {
+          status.textContent = `✅ アップロード成功: ${file.name}`;
+          fileInput.value = '';
+          refreshFileList();
+          updateStorageUsage();
+        })
+        .catch(err => {
+          console.error('アップロードエラー:', err);
+          status.textContent = '❌ アップロード失敗';
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    refreshBtn.addEventListener('click', () => {
+      refreshFileList();
+      updateStorageUsage();
+    });
+
+    // 初期読み込み
+    refreshFileList();
+    updateStorageUsage();
+  </script>
 </body>
 </html>
